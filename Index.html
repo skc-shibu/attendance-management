@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>勤怠管理</title>
+  <style>
+    :root {
+      --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --color-bg-primary: #ffffff;
+      --color-bg-secondary: #f5f5f7;
+      --color-bg-elevated: rgba(255, 255, 255, 0.78);
+      --color-text-primary: #1d1d1f;
+      --color-text-secondary: #6e6e73;
+      --color-accent: #0071e3;
+      --color-accent-hover: #0077ed;
+      --color-success: #34c759;
+      --color-warning: #ff9f0a;
+      --color-error: #ff3b30;
+      --color-border: rgba(0,0,0,0.08);
+      --shadow: 0 8px 20px rgba(0,0,0,0.08);
+      --radius: 16px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --transition: 200ms cubic-bezier(0.25,0.1,0.25,1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-text);
+      color: var(--color-text-primary);
+      background: var(--color-bg-secondary);
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(16px) saturate(180%);
+      background: rgba(245,245,247,0.82);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .nav {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+    }
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .tabs {
+      display: flex;
+      gap: var(--space-3);
+    }
+    .tab {
+      padding: var(--space-2) var(--space-4);
+      border-radius: 999px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: background var(--transition), color var(--transition);
+    }
+    .tab.active {
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      box-shadow: var(--shadow);
+    }
+    main {
+      max-width: 1080px;
+      margin: var(--space-6) auto;
+      padding: 0 var(--space-4) var(--space-8);
+    }
+    .view { display: none; }
+    .view.active { display: block; }
+    .card {
+      background: var(--color-bg-primary);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--space-5);
+      border: 1px solid var(--color-border);
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: var(--space-3) var(--space-4);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-primary {
+      background: var(--color-accent);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--color-accent-hover); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+    }
+    .btn-primary:disabled, .btn-secondary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--color-bg-secondary);
+      color: var(--color-text-secondary);
+    }
+    .badge.success { color: var(--color-success); }
+    .badge.warn { color: var(--color-warning); }
+    .badge.error { color: var(--color-error); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+    }
+    th { color: var(--color-text-secondary); font-weight: 600; }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--color-bg-primary);
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--color-border);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 200ms ease;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      padding: 12px;
+      font-family: var(--font-text);
+      resize: vertical;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      font-size: 15px;
+    }
+    label { display: block; margin-bottom: 6px; font-weight: 600; }
+    .muted { color: var(--color-text-secondary); font-size: 13px; }
+    /* Settings toggles */
+    .toggle-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-3);
+      align-items: stretch;
+    }
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-bg-secondary);
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+      cursor: pointer;
+    }
+    .toggle:hover {
+      border-color: rgba(0,0,0,0.12);
+      box-shadow: var(--shadow);
+      background: #fff;
+    }
+    .toggle-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .toggle-desc {
+      color: var(--color-text-secondary);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .switch-input {
+      appearance: none;
+      width: 48px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.12);
+      position: relative;
+      transition: background var(--transition), box-shadow var(--transition);
+      outline: none;
+      border: none;
+      flex-shrink: 0;
+    }
+    .switch-input::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .switch-input:checked {
+      background: var(--color-accent);
+      box-shadow: 0 4px 12px rgba(0,113,227,0.35);
+    }
+    .switch-input:checked::after {
+      transform: translateX(20px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    }
+    .switch-input:focus-visible {
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.2);
+    }
+    @media (max-width: 900px) {
+      .nav { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+      main { margin-top: var(--space-4); padding: 0 var(--space-3) var(--space-6); }
+      .grid.cols-2 { grid-template-columns: 1fr; }
+      .card { padding: var(--space-4); }
+      .tab { padding: var(--space-2) var(--space-3); }
+      button { width: 100%; }
+      .btn-secondary { width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">勤怠管理</div>
+      <div class="tabs">
+        <a class="tab" data-route="#/clock" href="#/clock">打刻</a>
+        <a class="tab" data-route="#/history" href="#/history">履歴</a>
+        <a class="tab" data-route="#/settings" href="#/settings">設定</a>
+      </div>
+    </div>
+  </header>
+  <main id="app">
+    <?!= include('Clock'); ?>
+    <?!= include('History'); ?>
+    <?!= include('Settings'); ?>
+  </main>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // Simple state
+    const state = {
+      settings: null,
+      today: null,
+      currentMonth: null,
+      monthSummary: null,
+      monthRows: [],
+    };
+
+    const routes = ['#/clock', '#/history', '#/settings'];
+
+    function showRoute(hash) {
+      const route = routes.includes(hash) ? hash : '#/clock';
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.dataset.route === route));
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.route === route));
+      if (route === '#/history') refreshHistory(state.currentMonth);
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2300);
+    }
+
+    // --------- API helpers ----------
+    function call(name, payload, onSuccess, onError) {
+      google.script.run
+        .withSuccessHandler((res) => {
+          // 文字列で返ってきた場合はJSONとしてパースを試みる
+          if (typeof res === 'string') {
+            try {
+              res = JSON.parse(res);
+            } catch (e) {
+              // パース失敗時は元の値のまま
+            }
+          }
+          if (!res || typeof res.ok === 'undefined') {
+            (onError || toast)('サーバー応答が不正です（デプロイ/権限を確認してください）');
+            return;
+          }
+          if (res.ok) onSuccess && onSuccess(res.data);
+          else (onError || toast)(res.error.message || 'エラーが発生しました');
+        })
+        .withFailureHandler((err) => (onError || toast)(err.message || '通信エラー'))
+        [name](payload);
+    }
+
+    // --------- Clock view ----------
+    function refreshToday() {
+      call('getTodayStatus', null, (data) => {
+        state.today = data;
+        state.currentMonth = data.yyyyMM;
+        document.getElementById('today-date').textContent = `${data.date} (${data.row ? data.row.dow : ''})`;
+        renderTodayCard(data.row);
+        updateClockButtons(data.row, false);
+        call('getHolidays', data.yyyyMM, (h) => {
+          const text = h.holidaySourceStatus === 'ok' ? '祝日カレンダー連携中' : '祝日カレンダー未接続';
+          const small = document.getElementById('holiday-status-small');
+          if (small) small.textContent = text;
+        });
+      });
+    }
+
+    function renderTodayCard(row) {
+      const fields = ['clockIn','breakStart','breakEnd','clockOut'];
+      fields.forEach(f => {
+        const el = document.querySelector(`[data-field="${f}"]`);
+        el.textContent = row && row[f] ? row[f] : '--';
+      });
+    }
+
+    // ボタン有効/無効を更新
+    function updateClockButtons(row, isBusy) {
+      const btnClockIn = document.getElementById('btn-clockIn');
+      const btnClockOut = document.getElementById('btn-clockOut');
+      const btnStartBreak = document.getElementById('btn-startBreak');
+      const btnEndBreak = document.getElementById('btn-endBreak');
+
+      // 通信中は全て無効
+      if (isBusy) {
+        btnClockIn.disabled = true;
+        btnClockOut.disabled = true;
+        btnStartBreak.disabled = true;
+        btnEndBreak.disabled = true;
+        return;
+      }
+
+      const clockIn = row && row.clockIn;
+      const clockOut = row && row.clockOut;
+      const breakStart = row && row.breakStart;
+      const breakEnd = row && row.breakEnd;
+
+      // 退勤済みなら全て無効
+      if (clockOut) {
+        btnClockIn.disabled = true;
+        btnClockOut.disabled = true;
+        btnStartBreak.disabled = true;
+        btnEndBreak.disabled = true;
+        return;
+      }
+
+      // 出勤: 未出勤のときのみ有効
+      btnClockIn.disabled = !!clockIn;
+
+      // 退勤: 出勤済みのときのみ有効
+      btnClockOut.disabled = !clockIn;
+
+      // 休憩開始: 出勤済み かつ 休憩開始未入力 のとき有効
+      btnStartBreak.disabled = !clockIn || !!breakStart;
+
+      // 休憩終了: 休憩開始済み かつ 休憩終了未入力 のとき有効
+      btnEndBreak.disabled = !breakStart || !!breakEnd;
+    }
+
+    function doClock(action) {
+      const map = {
+        clockIn: 'clockIn',
+        startBreak: 'startBreak',
+        endBreak: 'endBreak',
+        clockOut: 'clockOut',
+      };
+      // 通信中は全ボタン無効
+      updateClockButtons(null, true);
+      call(map[action], null, (data) => {
+        if (data.message) {
+          document.getElementById('copy-area').value = data.message;
+        }
+        renderTodayCard(data.row);
+        updateClockButtons(data.row, false);
+        // state.todayも更新
+        if (state.today) state.today.row = data.row;
+        toast('保存しました');
+      }, (errMsg) => {
+        // エラー時は元の状態に戻す
+        updateClockButtons(state.today ? state.today.row : null, false);
+        toast(errMsg);
+      });
+    }
+
+    function copyText() {
+      const ta = document.getElementById('copy-area');
+      ta.select();
+      document.execCommand('copy');
+      toast('コピーしました');
+    }
+
+    // --------- Settings ----------
+    function loadSettings() {
+      call('getSettings', null, (s) => {
+        state.settings = s;
+        document.getElementById('defaultWorkLocation').value = s.defaultWorkLocation;
+        document.getElementById('projectName').value = s.projectName;
+        document.getElementById('defaultBreakStart').value = s.defaultBreakStart;
+        document.getElementById('defaultBreakMinutes').value = s.defaultBreakMinutes;
+        document.getElementById('overtimeNonNegative').checked = !!s.overtimeNonNegative;
+        document.getElementById('autoFillBreakOnClockOut').checked = s.autoFillBreakOnClockOut !== false;
+      });
+    }
+
+    function saveSettings() {
+      const payload = {
+        defaultWorkLocation: document.getElementById('defaultWorkLocation').value,
+        projectName: document.getElementById('projectName').value,
+        defaultBreakStart: document.getElementById('defaultBreakStart').value,
+        defaultBreakMinutes: Number(document.getElementById('defaultBreakMinutes').value || 60),
+        overtimeNonNegative: document.getElementById('overtimeNonNegative').checked,
+        autoFillBreakOnClockOut: document.getElementById('autoFillBreakOnClockOut').checked,
+      };
+      call('saveSettings', payload, (s) => {
+        state.settings = s;
+        toast('設定を保存しました');
+      });
+    }
+
+    function ensureHolidayCalendar() {
+      call('ensureHolidayCalendar', null, (d) => {
+        toast(d.holidaySourceStatus === 'ok' ? '祝日カレンダーを有効化しました' : '祝日カレンダーに接続できません');
+        refreshHistory(state.currentMonth);
+      });
+    }
+
+    // --------- History ----------
+    function refreshHistory(yyyyMM) {
+      const target = yyyyMM || state.currentMonth;
+      if (!target) {
+        // 初期表示で #/history に直接入った場合、当月を確定してから再描画
+        call('getTodayStatus', null, (data) => {
+          state.today = data;
+          state.currentMonth = data.yyyyMM;
+          refreshHistory(data.yyyyMM);
+        });
+        return;
+      }
+      document.getElementById('month-label').textContent = target;
+      call('getMonthSummary', target, (sum) => {
+        state.monthSummary = sum;
+        renderSummary(sum);
+      });
+      call('getMonthData', target, (d) => {
+        state.monthRows = d.rows;
+        renderTable(d.rows);
+      });
+      call('getHolidays', target, (h) => {
+        const text = h.holidaySourceStatus === 'ok' ? '祝日カレンダー連携中' : '祝日カレンダー未接続';
+        document.getElementById('holiday-status').textContent = text;
+        const small = document.getElementById('holiday-status-small');
+        if (small) small.textContent = text;
+      });
+    }
+
+    function changeMonth(delta) {
+      const [y, m] = state.currentMonth.split('-').map(Number);
+      const dt = new Date(Date.UTC(y, m - 1 + delta, 1));
+      const next = `${dt.getUTCFullYear()}-${('0' + (dt.getUTCMonth() + 1)).slice(-2)}`;
+      state.currentMonth = next;
+      refreshHistory(next);
+    }
+
+    function renderSummary(sum) {
+      const ids = {
+        scheduledHoursTotal: 'scheduledTotal',
+        workedHoursToDate: 'workedToDate',
+        scheduledHoursToDate: 'scheduledToDate',
+        overtimeToDate: 'overtimeToDate',
+      };
+      Object.entries(ids).forEach(([k, id]) => {
+        document.getElementById(id).textContent = sum[k].toFixed ? sum[k].toFixed(2) : sum[k];
+      });
+      document.getElementById('warn-messages').innerHTML = [
+        sum.holidaySourceStatus === 'unavailable' ? '祝日カレンダーを取得できていません' : '',
+        sum.warnings.missingClockOutCount ? `未退勤 ${sum.warnings.missingClockOutCount} 件` : '',
+        sum.warnings.missingWorkHoursCount ? `実働未計算 ${sum.warnings.missingWorkHoursCount} 件` : '',
+      ].filter(Boolean).map(m => `<div class="badge warn">${m}</div>`).join('');
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById('history-body');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="muted">データがありません</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td>${r.date}</td>
+          <td>${r.dow}</td>
+          <td>${r.clockIn || ''}</td>
+          <td>${r.breakStart || ''}</td>
+          <td>${r.breakEnd || ''}</td>
+          <td>${r.clockOut || ''}</td>
+          <td>${r.workHours ?? ''}</td>
+          <td>${r.workContent || ''}</td>
+          <td>${r.workLocation || ''}</td>
+          <td>${r.note || ''}</td>
+        </tr>
+      `).join('');
+    }
+
+    function goTodayMonth() {
+      const today = state.today ? state.today.date : '';
+      const yyyyMM = today ? today.slice(0, 7) : state.currentMonth;
+      state.currentMonth = yyyyMM;
+      refreshHistory(yyyyMM);
+    }
+
+    // --------- Init ----------
+    window.addEventListener('hashchange', () => showRoute(location.hash));
+    window.addEventListener('load', () => {
+      loadSettings();
+      refreshToday();
+      showRoute(location.hash);
+    });
+  </script>
+</body>
+</html>

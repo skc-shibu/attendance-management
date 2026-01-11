@@ -1,0 +1,45 @@
+<section class="view" data-route="#/history">
+  <div class="card" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="btn-secondary" onclick="changeMonth(-1)">← 前月</button>
+      <div id="month-label" style="font-size:20px; font-weight:700;">----</div>
+      <button class="btn-secondary" onclick="changeMonth(1)">次月 →</button>
+      <button class="btn-secondary" onclick="goTodayMonth()">今月</button>
+    </div>
+    <div class="badge" id="holiday-status">祝日カレンダー確認中</div>
+  </div>
+
+  <div class="grid cols-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="muted">所定時間（営業日×8h）</div>
+      <div style="font-size:28px; font-weight:700;" id="scheduledTotal">--</div>
+    </div>
+    <div class="card">
+      <div class="muted">本日までの総労働時間</div>
+      <div style="font-size:28px; font-weight:700;" id="workedToDate">--</div>
+    </div>
+    <div class="card">
+      <div class="muted">本日までの所定時間</div>
+      <div style="font-size:28px; font-weight:700;" id="scheduledToDate">--</div>
+    </div>
+    <div class="card">
+      <div class="muted">本日までの残業時間</div>
+      <div style="font-size:28px; font-weight:700;" id="overtimeToDate">--</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div id="warn-messages" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+  </div>
+
+  <div class="card" style="margin-top:16px; overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>日付</th><th>曜</th><th>出勤</th><th>休憩開始</th><th>休憩終了</th><th>退勤</th><th>実働</th><th>作業内容</th><th>作業場所</th><th>備考</th>
+        </tr>
+      </thead>
+      <tbody id="history-body"></tbody>
+    </table>
+  </div>
+</section>

@@ -1,0 +1,49 @@
+<section class="view" data-route="#/clock">
+  <div class="grid cols-2">
+    <div class="card">
+      <div style="display:flex; justify-content: space-between; align-items: center; gap:12px;">
+        <div>
+          <div class="muted">今日</div>
+          <div id="today-date" style="font-size:24px; font-weight:700;">--</div>
+        </div>
+        <div class="badge" id="holiday-status-small"></div>
+      </div>
+      <div style="margin-top:16px; display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:12px;">
+        <div class="card" style="box-shadow:none; border:1px dashed var(--color-border); background:var(--color-bg-secondary);">
+          <div class="muted">出勤</div>
+          <div style="font-size:24px;" data-field="clockIn">--</div>
+        </div>
+        <div class="card" style="box-shadow:none; border:1px dashed var(--color-border); background:var(--color-bg-secondary);">
+          <div class="muted">退勤</div>
+          <div style="font-size:24px;" data-field="clockOut">--</div>
+        </div>
+        <div class="card" style="box-shadow:none; border:1px dashed var(--color-border); background:var(--color-bg-secondary);">
+          <div class="muted">休憩開始</div>
+          <div style="font-size:24px;" data-field="breakStart">--</div>
+        </div>
+        <div class="card" style="box-shadow:none; border:1px dashed var(--color-border); background:var(--color-bg-secondary);">
+          <div class="muted">休憩終了</div>
+          <div style="font-size:24px;" data-field="breakEnd">--</div>
+        </div>
+      </div>
+      <div style="display:grid; gap:12px; margin-top:16px;">
+        <div style="display:grid; grid-template-columns: repeat(2,minmax(120px,1fr)); gap:12px;">
+          <button id="btn-clockIn" class="btn-primary" onclick="doClock('clockIn')">出勤</button>
+          <button id="btn-clockOut" class="btn-primary" onclick="doClock('clockOut')">退勤</button>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(2,minmax(120px,1fr)); gap:12px;">
+          <button id="btn-startBreak" class="btn-secondary" onclick="doClock('startBreak')">休憩開始</button>
+          <button id="btn-endBreak" class="btn-secondary" onclick="doClock('endBreak')">休憩終了</button>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; height:100%;">
+      <div style="display:flex; justify-content: space-between; align-items:center;">
+        <h3 style="margin:0;">コピー用テンプレ</h3>
+        <button class="btn-secondary" onclick="copyText()">コピー</button>
+      </div>
+      <textarea id="copy-area" spellcheck="false" style="margin-top:12px; flex:1; min-height:0;"></textarea>
+      <div class="muted" style="margin-top:8px;">打刻後、自動で最新の文面を生成します</div>
+    </div>
+  </div>
+</section>

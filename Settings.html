@@ -1,0 +1,112 @@
+<section class="view" data-route="#/settings">
+  <div class="card">
+    <h3 style="margin-top:0;">設定</h3>
+    
+    <!-- 作業情報セクション -->
+    <div class="settings-section">
+      <div class="settings-section-header">作業情報</div>
+      <div class="settings-section-content">
+        <div class="settings-row">
+          <div>
+            <label for="defaultWorkLocation">デフォルト作業場所</label>
+            <select id="defaultWorkLocation">
+              <option>本社出社</option>
+              <option>テレワーク</option>
+              <option>常駐先</option>
+              <option>客先</option>
+            </select>
+          </div>
+          <div>
+            <label for="projectName">案件名</label>
+            <input id="projectName" placeholder="案件名を入力" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 休憩設定セクション -->
+    <div class="settings-section">
+      <div class="settings-section-header">休憩設定</div>
+      <div class="settings-section-content">
+        <div class="settings-row">
+          <div>
+            <label for="defaultBreakStart">休憩開始時刻</label>
+            <input id="defaultBreakStart" type="time" value="13:00" />
+          </div>
+          <div>
+            <label for="defaultBreakMinutes">休憩時間（分）</label>
+            <input id="defaultBreakMinutes" type="number" value="60" min="0" step="5" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 動作オプションセクション -->
+    <div class="settings-section">
+      <div class="settings-section-header">動作オプション</div>
+      <div class="settings-section-content">
+        <div class="toggle-group">
+          <label class="toggle" for="autoFillBreakOnClockOut">
+            <div>
+              <div class="toggle-title">退勤時に休憩を自動補完する</div>
+              <div class="toggle-desc">休憩未入力でも退勤打刻時に補完します</div>
+            </div>
+            <input type="checkbox" id="autoFillBreakOnClockOut" class="switch-input" />
+          </label>
+          <label class="toggle" for="overtimeNonNegative">
+            <div>
+              <div class="toggle-title">残業時間をマイナスにしない</div>
+              <div class="toggle-desc">不足分を0に丸め、マイナス表示を防ぎます</div>
+            </div>
+            <input type="checkbox" id="overtimeNonNegative" class="switch-input" />
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- アクションセクション -->
+    <div class="settings-section" style="border-bottom: none;">
+      <div class="settings-section-header">アクション</div>
+      <div class="settings-section-content">
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="saveSettings()">保存</button>
+          <button class="btn-secondary" onclick="ensureHolidayCalendar()">祝日カレンダー有効化</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="muted" style="margin-top:12px;">保存先: UserProperties / 祝日カレンダー: Google公式</div>
+  </div>
+</section>
+
+<style>
+  .settings-section {
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .settings-section-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-3);
+  }
+  .settings-section-content {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+  }
+  .settings-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+  }
+  .settings-section .toggle-group {
+    background: transparent;
+  }
+  .settings-section .toggle {
+    background: var(--color-bg-primary);
+  }
+</style>
